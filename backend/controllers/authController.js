@@ -97,8 +97,8 @@ export const login = async (req, res) => {
       });
     }
 
-    console.log('user', user);
-    console.log(typeof process.env.ACCESS_TOKEN_EXPIRES_IN);
+    // console.log('user', user);
+    // console.log(typeof process.env.ACCESS_TOKEN_EXPIRES_IN);
     //  If the password is valid we create token
     const accessToken = jwt.sign(
       { userId: user._id },
