@@ -1,9 +1,8 @@
 import express from 'express';
+// import userController from '../controllers/userController.js';
 
 const router = express.Router();
 
-router.post('/', (req, res) => {
-  res.send('hello from the server. ');
-});
+// router.get('/', userController);
 
 export default router;

@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
@@ -57,6 +58,7 @@ const userSchema = new Schema(
         128,
         'Password must be less than or equal to 128 characters!',
       ],
+      select: false,
     },
 
     confirmPassword: {
@@ -70,17 +72,32 @@ const userSchema = new Schema(
         },
       },
     },
-  },
-  {
-    timestamps: {
-      createdAt: {
-        type: Date,
-        default: Date.now,
-        select: false,
-      },
+    acitve: {
+      type: Boolean,
+      default: false,
     },
-  }
+
+    avatar: {
+      type: String,
+      default: null,
+    },
+  },
+  { timestamps: true }
 );
+
+// Hash password before saving to the database using PreSave Hook
+userSchema.pre('save', async function (next) {
+  // Encrypt the password only if it is modified
+  if (!this.isModified('password')) return next();
+
+  // Else, encrypt(hash) the password
+  const salt = await bcrypt.genSalt(12);
+  this.password = await bcrypt.hash(this.password, salt);
+
+  // Delete the confirmPassword field(it should not be stored in DB)
+  this.confirmPassword = undefined;
+  next();
+});
 
 const User = mongoose.model('User', userSchema);
 
