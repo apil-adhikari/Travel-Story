@@ -43,3 +43,57 @@ const server = app.listen(port, ()=>{
 })
 
 ```
+
+### Routes Creation
+
+We have setup base route `/api/v1/` using express middleware and base on the URL such as `/api/v1/user/___`, we identify it is user route, then we will got the user route. This is called `mounting the router`. This is helpful as we don't have to put the base route in every route.
+
+Example: `userRoutes.js`
+
+```JavaScript
+import express from "express";
+
+// creating a express router
+const router = express.Router();
+
+export default router;
+```
+
+We use this router in our app `app.js`. We use middleware to mount the router after we create our express application.
+If the url is `'/api/v1/users'` we wil navigate to user routes.
+
+```JavaScript
+import userRouter from "./routers/userRoute.js";
+
+app.use("/api/v1/users",userRouter);
+```
+
+### Model Creation
+
+Required package: `mongoose`
+
+    npm install mongoose
+
+`mongoose` object modeling is used to create a model
+In NoSQL database(for mongoDB), we have `schema`(like in traditional db, we used have table definition), `Collection`: is like table and `document`: is like each record in the table.
+
+To create a model using mongoose we have to follow these steps:
+
+1. We need to import mongoose
+2. We need to create a mongoose schema (defining the structure of our model):
+   Everything in Mongoose starts with a Schema. Each schema maps to a MongoDB collection and defines the shape of the documents within that collection.
+3. We need to create model out of our mongoose schame
+
+Example:
+
+```JavaScript
+import mongoose from "mongoose";
+
+// Schema creation
+const userSchema = new mongoose.Schema({
+
+})
+
+// Model creation out of schema
+const User = mongoose.model("User", userSchema);
+```
