@@ -155,6 +155,22 @@ export const getAllUsers = async (req, res) => {
 
 export const getUser = async (req, res) => {
   try {
+    const id = req.params.id;
+
+    const isUser = await User.findById(id);
+    if (!isUser) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'No user exists with the provided ID',
+      });
+    }
+
+    return res.status(200).json({
+      status: 'success',
+      data: {
+        user: isUser,
+      },
+    });
   } catch (error) {
     console.log('Error in getUser() controller: ', error);
     res.status(500).json({
