@@ -231,6 +231,21 @@ export const updateUser = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
   try {
+    const id = req.params.id;
+
+    const userToDelete = await User.findByIdAndDelete(id);
+    if (!userToDelete) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'No user found with the provided ID',
+      });
+    }
+
+    return res.status(204).json({
+      status: 'success',
+      message: 'User deleted successfully 😀',
+      data: null,
+    });
   } catch (error) {
     console.log('Error in deleteUser() controller: ', error);
     res.status(500).json({
