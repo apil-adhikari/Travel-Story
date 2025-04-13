@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import User from '../models/userModel.js';
 
 /**filterObject : function to filter req.body data to include only certain fields
@@ -165,6 +166,44 @@ export const getUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
+    const id = req.params.id;
+    const { firstName, middleName, lastName, email, password, role, active } =
+      req.body;
+
+    const salt = await bcrypt.genSalt(12);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      {
+        firstName,
+        middleName,
+        lastName,
+        email,
+        password: hashedPassword,
+        role,
+        active,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'No user found with that ID',
+      });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'User updated successfully 😀',
+      data: {
+        user: updatedUser,
+      },
+    });
   } catch (error) {
     console.log('Error in updateUser() controller: ', error);
     res.status(500).json({
