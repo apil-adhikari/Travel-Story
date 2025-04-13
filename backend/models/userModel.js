@@ -72,14 +72,20 @@ const userSchema = new Schema(
         },
       },
     },
-    acitve: {
+    active: {
       type: Boolean,
-      default: false,
+      default: true,
     },
 
     avatar: {
       type: String,
       default: null,
+    },
+
+    lastLoggedInAt: {
+      type: Date,
+      default: Date.now(),
+      select: false,
     },
   },
   { timestamps: true }
@@ -99,9 +105,37 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+// QUERY MIDDLEWARE to do certain things before doing query
+userSchema.pre(/^find/, function (next) {
+  this.find({ acitve: { $ne: false } });
+  next();
+});
+
 // VERIFY THE USER ENTERED PASSWORD AGAINST THE DATABASE (using Instances  methods)
 userSchema.methods.verifyPassword = async function (userEnteredPassword) {
   return await bcrypt.compare(userEnteredPassword, this.password);
+};
+
+// Check if the user has logged in again(if. if the issued at < lastLoggedInTime)
+userSchema.methods.hasLoggedInAfter = function (tokenIssuedAtTimestamp) {
+  if (this.lastLoggedInAt) {
+    const lastLoggedInTimestamp = parseInt(
+      this.lastLoggedInAt.getTime() / 1000,
+      10
+    );
+    // console.log(
+    //   'Token Issued Time Stamp: ',
+    //   tokenIssuedAtTimestamp,
+    //   'Last Logged In Time Stamp: ',
+    //   lastLoggedInTimestamp
+    // );
+    // console.log(tokenIssuedAtTimestamp < lastLoggedInTimestamp);
+
+    return tokenIssuedAtTimestamp < lastLoggedInTimestamp;
+  }
+
+  // False means used did not logged in again aftet the token was issued.
+  return false;
 };
 
 const User = mongoose.model('User', userSchema);

@@ -89,7 +89,17 @@ export const login = async (req, res) => {
     // }
 
     // Right way of send the response
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email }).select(
+      '+password +lastLoggedInAt'
+    );
+
+    await User.findOneAndUpdate(
+      { email },
+      {
+        lastLoggedInAt: Date.now(),
+      }
+    );
+
     if (!user || !(await user.verifyPassword(password, user.password))) {
       return res.status(401).json({
         status: 'fail',

@@ -46,12 +46,28 @@ export const authenticateToken = async (req, res, next) => {
         });
       }
       if (decoded) {
+        // Extracting the token issued time
+        const tokenIssuedAt = decoded.iat;
+
         // console.log('DECODED: ', decoded);
-        const currentUser = await User.findById(decoded.userId);
+        const currentUser = await User.findById(decoded.userId).select(
+          '+lastLoggedInAt'
+        );
+        // console.log('Current User: ', currentUser);
         if (!currentUser) {
           return res.status(401).json({
             status: 'fail',
             message: 'The user belonging to this token does not exist',
+          });
+        }
+
+        // Check if the token was issued before the user login
+        // console.log('Last Logged In at: ', currentUser.lastLoggedInAt);
+        if (currentUser.hasLoggedInAfter(decoded.iat)) {
+          return res.status(401).json({
+            status: 'fail',
+            message:
+              'Token is invalid. You have logged in again after the token was issued. Please use new token or login again to get new token.',
           });
         }
         // Send the current user in req.user

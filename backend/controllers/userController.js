@@ -98,4 +98,35 @@ export const updateMe = async (req, res) => {
   }
 };
 
+/**  Delete account by user(by logged in user)
+ * - We do not actually delete the account, but we deactivate the account by setting the active flag to false and return the null data.
+ *  */
+
+export const deleteMe = async (req, res) => {
+  try {
+    const id = req.user.id;
+    console.log(id);
+
+    console.log('REQ.USER.id', req.user.id);
+    const user = await User.findOneAndUpdate(
+      { _id: id },
+      { active: false },
+      { new: true, runValidators: true }
+    );
+    console.log(user);
+
+    res.status(200).json({
+      status: 'success',
+      data: null,
+      message: 'User deleted successfully 😀',
+    });
+  } catch (error) {
+    console.log('Error in deleteMe() controller: ', error);
+    return res.status(500).json({
+      status: 'error',
+      message: error,
+    });
+  }
+};
+
 // --- End of CRUD Operations ---
