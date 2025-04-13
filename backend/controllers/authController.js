@@ -144,7 +144,7 @@ export const login = async (req, res) => {
 export const restrictRouteTo = (...roles) => {
   return (req, res, next) => {
     // Example: roles ['admin'] ✔️ has access but role ="user" ❌ doesnot have access
-    if (!roles.includes(req.user.roles)) {
+    if (!roles.includes(req.user.role)) {
       return res.status(403).json({
         status: 'fail',
         mesasge: 'You do not have permission (role) to perform this action',
