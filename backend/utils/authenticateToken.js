@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 import User from '../models/userModel.js';
 
-/** authenticateToken middleware: Middleware function to protect routes
+/** authenticateToken middleware: is to place the logged in user in req.user and is Middleware function to protect routes
  * STEPS:
  * 1) Getting the tokens and checking if its there (it it exists)
  * 2) Validate the token (#Very Important Step) where we verify the token
