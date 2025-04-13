@@ -99,6 +99,7 @@ export const login = async (req, res) => {
         lastLoggedInAt: Date.now(),
       }
     );
+    console.log(user);
 
     if (!user || !(await user.verifyPassword(password, user.password))) {
       return res.status(401).json({
@@ -135,6 +136,77 @@ export const login = async (req, res) => {
     res.status(500).json({
       status: 'error',
       message: 'Internal Server Error',
+    });
+  }
+};
+
+//**RBAC: Role Base Access Control: using user roles and setting permission */
+export const restrictRouteTo = (...roles) => {
+  return (req, res, next) => {
+    // Example: roles ['admin'] ✔️ has access but role ="user" ❌ doesnot have access
+    if (!roles.includes(req.user.roles)) {
+      return res.status(403).json({
+        status: 'fail',
+        mesasge: 'You do not have permission (role) to perform this action',
+      });
+    }
+    next();
+  };
+};
+
+/**USER CREATION BY ADMIN */
+export const createUser = async (req, res) => {
+  try {
+    // console.log(req.body);
+    const {
+      firstName,
+      middleName,
+      lastName,
+      email,
+      role,
+      password,
+      confirmPassword,
+    } = req.body;
+
+    if (!firstName || !middleName || !lastName || !email) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'All fields are required',
+      });
+    }
+
+    const isUser = await User.findOne({ email });
+    if (isUser) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'User already exists',
+      });
+    }
+
+    const user = await User.create({
+      firstName,
+      middleName,
+      lastName,
+      email,
+      password,
+      confirmPassword,
+      role,
+    });
+
+    user.password = undefined;
+
+    res.status(201).json({
+      status: 'success',
+      data: {
+        user,
+      },
+      message: 'Signup successful 😀',
+    });
+  } catch (error) {
+    console.log('Error in createUser() controller: ', error);
+    res.status(500).json({
+      status: 'error',
+      message: error,
     });
   }
 };

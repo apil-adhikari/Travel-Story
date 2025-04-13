@@ -82,9 +82,12 @@ const userSchema = new Schema(
       default: null,
     },
 
+    role: { type: String, enum: ['admin', 'user'], default: 'user' },
+
     lastLoggedInAt: {
       type: Date,
-      default: Date.now(),
+      // default: Date.now(),
+      default: null,
       select: false,
     },
   },
@@ -107,7 +110,7 @@ userSchema.pre('save', async function (next) {
 
 // QUERY MIDDLEWARE to do certain things before doing query
 userSchema.pre(/^find/, function (next) {
-  this.find({ acitve: { $ne: false } });
+  this.find({ active: { $ne: false } });
   next();
 });
 

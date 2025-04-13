@@ -130,3 +130,58 @@ export const deleteMe = async (req, res) => {
 };
 
 // --- End of CRUD Operations ---
+
+// --- Admin Accessed Routes ---
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+
+    res.status(200).json({
+      status: 'success',
+      results: `${users.length} documents found`,
+      data: {
+        users,
+      },
+    });
+  } catch (error) {
+    console.log('Error in getAllUsers() controller: ', error);
+    res.status(500).json({
+      status: 'error',
+      message: error,
+    });
+  }
+};
+
+export const getUser = async (req, res) => {
+  try {
+  } catch (error) {
+    console.log('Error in getUser() controller: ', error);
+    res.status(500).json({
+      status: 'error',
+      message: error,
+    });
+  }
+};
+
+export const updateUser = async (req, res) => {
+  try {
+  } catch (error) {
+    console.log('Error in updateUser() controller: ', error);
+    res.status(500).json({
+      status: 'error',
+      message: error,
+    });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+  } catch (error) {
+    console.log('Error in deleteUser() controller: ', error);
+    res.status(500).json({
+      status: 'error',
+      message: error,
+    });
+  }
+};
+// --- End of Admin Accessed Routes ---
