@@ -99,7 +99,7 @@ export const login = async (req, res) => {
         lastLoggedInAt: Date.now(),
       }
     );
-    console.log(user);
+    // console.log(user);
 
     if (!user || !(await user.verifyPassword(password, user.password))) {
       return res.status(401).json({
@@ -152,6 +152,44 @@ export const restrictRouteTo = (...roles) => {
     }
     next();
   };
+};
+
+/**UPDATE PASSWORD BY USER */
+export const updatePassword = async (req, res) => {
+  try {
+    const id = req.user.id;
+
+    const { password, confirmPassword } = req.body;
+
+    const user = await User.findById(id).select('+password');
+
+    // Check if there is POSTed password is correct
+    if (!user || !(await user.verifyPassword(password, user.password))) {
+      return res.status(401).json({
+        status: 'fail',
+        mesasge: 'Your corrent password is wrong',
+      });
+    }
+
+    // If there is user and the entered password is coreect
+    user.password = password;
+    user.confirmPassword = confirmPassword;
+    await user.save(); // User.findByIdAndUpdate will now work as intended here because presave hooks only run on .CREATE() or .SAVE()
+
+    return res.status(200).json({
+      status: 'success',
+      message: 'Password updated successfully 😀',
+      data: {
+        user,
+      },
+    });
+  } catch (error) {
+    console.log('Error in updateMyPassword() controller: ', error);
+    res.status(500).json({
+      status: 'error',
+      message: error,
+    });
+  }
 };
 
 /**USER CREATION BY ADMIN */

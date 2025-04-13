@@ -9,12 +9,13 @@ import {
   updateMe,
   updateUser,
 } from '../controllers/userController.js';
-import { createUser } from '../controllers/authController.js';
+import { createUser, updatePassword } from '../controllers/authController.js';
 
 const router = express.Router();
 
 router.get('/me', authenticateToken, getMe);
 router.patch('/update-me', authenticateToken, updateMe);
+router.patch('/update-my-password', authenticateToken, updatePassword);
 router.delete('/delete-me', authenticateToken, deleteMe);
 
 // Admin Routes: Below routes shoudl be only be accessed by admins so we can make use of middleware
