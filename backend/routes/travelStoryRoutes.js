@@ -1,5 +1,8 @@
 import express from 'express';
-import { createTravelStory } from '../controllers/travelStoryController.js';
+import {
+  createTravelStory,
+  getAllTravelStory,
+} from '../controllers/travelStoryController.js';
 import { authenticateToken } from '../utils/authenticateToken.js';
 
 const router = express.Router();
@@ -18,7 +21,7 @@ const router = express.Router();
 router.use(authenticateToken);
 
 router.post('/', createTravelStory);
-// router.get('/', getAllTravelStory);
+router.get('/', getAllTravelStory);
 // router.get('/:id', getTravelStory);
 // router.patch('/:id', updateTravelStory);
 // router.delete('/:id', deleteTravelStory);

@@ -21,7 +21,7 @@ const travelStorySchema = new mongoose.Schema(
         'A travel story title must be more than or equal to 10 characters',
       ],
       maxLength: [
-        '40',
+        40,
         'A travel story must be less than or equal to 40 characters',
       ],
     },
@@ -47,7 +47,7 @@ const travelStorySchema = new mongoose.Schema(
     },
 
     // REFERENCE TO USER: A story must belong to certain user
-    userId: {
+    author: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'A story must be associated with certain user'],

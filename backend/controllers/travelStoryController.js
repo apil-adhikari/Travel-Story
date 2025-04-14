@@ -11,14 +11,14 @@ export const createTravelStory = async (req, res) => {
       visitedDate,
     } = req.body;
 
-    const userId = req.user.id;
+    const author = req.user.id;
 
     // Validate required fields
     if (
       !title ||
       !story ||
       !visitedLocations ||
-      !userId ||
+      !author ||
       !coverImage ||
       !visitedDate
     ) {
@@ -38,7 +38,7 @@ export const createTravelStory = async (req, res) => {
       story,
       visitedLocations,
       isFavourite,
-      userId,
+      author,
       coverImage,
       // visitedDate: parsedVisitedDate,
       visitedDate,
@@ -53,6 +53,29 @@ export const createTravelStory = async (req, res) => {
     });
   } catch (error) {
     console.log('Error in createTravelStory() controller: ', error);
+    res.status(500).json({
+      status: 'error',
+      message: error,
+    });
+  }
+};
+
+/** Gets all Travel Stories */
+export const getAllTravelStory = async (req, res) => {
+  try {
+    const travelStories = await TravelStory.find().sort({
+      isFavourite: -1,
+    });
+
+    return res.status(200).json({
+      status: 'success',
+      result: `${travelStories.length} story found`,
+      data: {
+        stories: travelStories,
+      },
+    });
+  } catch (error) {
+    console.log('Error in getAllTravelStory() controller: ', error);
     res.status(500).json({
       status: 'error',
       message: error,
