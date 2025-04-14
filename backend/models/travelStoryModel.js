@@ -10,29 +10,31 @@ import mongoose, { Schema } from 'mongoose';
  * - visitedDate: Date, required
  * OPTIONAL DATA THAT I CAN ADD LATER: slugs, geoJSON data for locations
  */
-const travelStorySchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: [true, 'A travel story must have a title'],
-    trim: true,
-    minLength: [
-      10,
-      'A travel story title must be more than or equal to 10 characters',
-    ],
-    maxLength: [
-      '40',
-      'A travel story must be less than or equal to 40 characters',
-    ],
-  },
+const travelStorySchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: [true, 'A travel story must have a title'],
+      trim: true,
+      minLength: [
+        10,
+        'A travel story title must be more than or equal to 10 characters',
+      ],
+      maxLength: [
+        '40',
+        'A travel story must be less than or equal to 40 characters',
+      ],
+    },
 
-  story: {
-    type: String,
-    required: [true, 'A travel must have some story'],
-    trim: true,
-    minLength: [
-      5,
-      'Story of your travel must be more than or equal to 5 characters',
-    ],
+    story: {
+      type: String,
+      required: [true, 'A travel must have some story'],
+      trim: true,
+      minLength: [
+        5,
+        'Story of your travel must be more than or equal to 5 characters',
+      ],
+    },
 
     visitedLocations: {
       type: [String], // Array of string
@@ -64,7 +66,10 @@ const travelStorySchema = new mongoose.Schema({
       ],
     },
   },
-});
+  {
+    timestamps: true,
+  }
+);
 
 const TravelStory = mongoose.model('TravelStory', travelStorySchema);
 export default TravelStory;
