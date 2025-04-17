@@ -103,7 +103,6 @@ travelStorySchema.pre('save', function (next) {
 });
 
 travelStorySchema.pre('save', function (next) {
-  console.log('IN PRE SAVE HOOK:::');
   this.slug = slugify(this.title, {
     trim: true,
     lower: true,

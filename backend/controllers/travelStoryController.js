@@ -1,4 +1,7 @@
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 import TravelStory from '../models/travelStoryModel.js';
+import path from 'path';
 
 // HANDLING FILE UPLOADS using `multer`
 
@@ -114,7 +117,7 @@ export const updateTravelStory = async (req, res) => {
       req.body;
 
     // Find the travel story by ID that we want to update and ensure it belongs to the authenticated user
-    const existingTravelStory = await TravelStory.findById({ _id: id });
+    const existingTravelStory = await TravelStory.findById({ _id: id, author });
     if (!existingTravelStory) {
       return res.status(400).json({
         status: 'fail',
@@ -137,7 +140,7 @@ export const updateTravelStory = async (req, res) => {
 
     // update the story
     const updatedTravelStory = await TravelStory.findByIdAndUpdate(
-      { _id: id },
+      { _id: id, author },
       {
         title,
         storyContent,
@@ -164,6 +167,85 @@ export const updateTravelStory = async (req, res) => {
     });
   } catch (error) {
     console.log('Error in updateTravelStory() controller: ', error);
+    res.status(500).json({
+      status: 'error',
+      message: error,
+    });
+  }
+};
+
+/** Delete the travel story
+ * - get the specify travel story id
+ * - get the travel story to deltet
+ * - the user should be logged in and he should be the owner
+ */
+export const deleteTravelStory = async (req, res) => {
+  try {
+    // Get the specific id of post
+    const id = req.params.id;
+
+    // Get the author
+    const author = req.user.id;
+
+    // Find the document with the given id
+    const existingTravelStory = await TravelStory.findById({ _id: id, author });
+    if (!existingTravelStory) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'There is no such post related to the provided ID',
+      });
+    }
+
+    // Check if the found document's author is same as the author comming from req.user.id
+    if (author != existingTravelStory.author) {
+      return res.status(401).json({
+        status: 'fail',
+        message:
+          'You cannot delte this post because you are not the owner of this post',
+      });
+    }
+
+    // Finally, delete the story
+    await TravelStory.deleteOne({
+      _id: id,
+      author,
+    });
+
+    // Extract the filename from imageUrl
+    // const coverImage = TravelStory.coverImage;
+    // const images = TravelStory.images;
+
+    const coverImage = existingTravelStory.coverImage;
+    const images = existingTravelStory.images;
+    const allImages = [coverImage, ...images];
+
+    allImages.map((image) => {
+      const __filename = image; //only for esmodule
+      const __dirname = path.dirname(__filename); //only for esmodule
+
+      const filePath = path.join(
+        __dirname,
+        'public/images/travelStoryImages/',
+        __filename
+      );
+
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          return res.statuss(400).json({
+            status: 'fail',
+            message: 'Unable to deltet',
+          });
+        }
+      });
+      console.log(filePath);
+    });
+
+    res.status(204).json({
+      status: 'success',
+      message: 'Story deleted successfully',
+    });
+  } catch (error) {
+    console.log('Error in deleteTravelStory: ', error);
     res.status(500).json({
       status: 'error',
       message: error,

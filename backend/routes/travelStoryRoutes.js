@@ -3,6 +3,7 @@ import {
   createTravelStory,
   getAllTravelStory,
   updateTravelStory,
+  deleteTravelStory,
 } from '../controllers/travelStoryController.js';
 import { authenticateToken } from '../utils/authenticateToken.js';
 import {
@@ -40,6 +41,6 @@ router.patch(
   resizeTravelStoryImages,
   updateTravelStory
 );
-// router.delete('/:id', deleteTravelStory);
+router.delete('/:id', authenticateToken, deleteTravelStory);
 
 export default router;
