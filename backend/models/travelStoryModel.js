@@ -26,13 +26,13 @@ const travelStorySchema = new mongoose.Schema(
       ],
     },
 
-    story: {
+    storyContent: {
       type: String,
-      required: [true, 'A travel must have some story'],
+      required: [true, 'A travel must have some story content'],
       trim: true,
       minLength: [
         5,
-        'Story of your travel must be more than or equal to 5 characters',
+        'Story content of your travel must be more than or equal to 5 characters',
       ],
     },
 

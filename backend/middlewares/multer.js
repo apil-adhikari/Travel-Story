@@ -78,7 +78,7 @@ export const resizeTravelStoryImages = async (req, res, next) => {
 
     await Promise.all(
       req.files.images.map(async (file, i) => {
-        const uniqueSuffix = `${Date.now()}-${Math.round(
+        const uniqueSuffix = `image-${Date.now()}-${Math.round(
           Math.random() * 1e9
         )}-${i + 1}`;
         const filename = `${uniqueSuffix}.jpeg`;
@@ -88,7 +88,7 @@ export const resizeTravelStoryImages = async (req, res, next) => {
           .resize(2000, 1333)
           .toFormat('jpeg')
           .jpeg({ quality: 90 })
-          .toFile(`public/images/travelStoryImages/image-${filename}`);
+          .toFile(`public/images/travelStoryImages/${filename}`);
 
         req.body.images.push(filename);
       })

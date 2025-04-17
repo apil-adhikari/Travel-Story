@@ -4,7 +4,7 @@ import TravelStory from '../models/travelStoryModel.js';
 
 export const createTravelStory = async (req, res) => {
   try {
-    const { title, story, visitedLocations, isFavourite, visitedDate } =
+    const { title, storyContent, visitedLocations, isFavourite, visitedDate } =
       req.body;
 
     const author = req.user.id;
@@ -28,7 +28,7 @@ export const createTravelStory = async (req, res) => {
     // Validate required fields
     if (
       !title ||
-      !story ||
+      !storyContent ||
       !visitedLocations ||
       !author ||
       !coverImage ||
@@ -47,7 +47,7 @@ export const createTravelStory = async (req, res) => {
 
     const travelStory = await TravelStory.create({
       title,
-      story,
+      storyContent,
       visitedLocations,
       isFavourite,
       author,
