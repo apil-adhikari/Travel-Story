@@ -4,6 +4,8 @@ import {
   getAllTravelStory,
   updateTravelStory,
   deleteTravelStory,
+  updateIsFavourite,
+  searchStoreis,
 } from '../controllers/travelStoryController.js';
 import { authenticateToken } from '../utils/authenticateToken.js';
 import {
@@ -42,5 +44,11 @@ router.patch(
   updateTravelStory
 );
 router.delete('/:id', authenticateToken, deleteTravelStory);
+
+// ROUTE FOR SEARCH TRAVEL STORY
+router.patch('/update-is-favourite/:id', authenticateToken, updateIsFavourite);
+
+// SEARCH (public route)
+router.get('/search', authenticateToken, searchStoreis);
 
 export default router;

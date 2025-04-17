@@ -252,3 +252,85 @@ export const deleteTravelStory = async (req, res) => {
     });
   }
 };
+
+// UPDATE IS FAVOURITE: explicitly not needed because we have this logic in update travel story too
+export const updateIsFavourite = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { isFavourite } = req.body;
+    const author = req.user.id;
+
+    const travelStory = await TravelStory.findById({
+      _id: id,
+      author,
+    });
+
+    if (!travelStory) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Travel Story not found',
+      });
+    }
+
+    travelStory.isFavourite = isFavourite;
+
+    await travelStory.save();
+    res.status(200).json({
+      status: 'success',
+      message: 'Favourite updated successfully',
+      data: {
+        travelStory,
+      },
+    });
+  } catch (error) {
+    console.log('Error in updateIsFavourite() controller: ', error);
+    res.status(500).json({
+      status: 'error',
+      message: error,
+    });
+  }
+};
+
+// SEARCH Stories
+export const searchStoreis = async (req, res) => {
+  try {
+    // Get the user trying to get the stories
+    const id = req.user.id;
+
+    // GET the query parameter
+    const { query } = req.query;
+
+    // Check if the query exists
+    if (!query) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Query is required',
+      });
+    }
+
+    // SEARCH
+    const searchResults = await TravelStory.find({
+      author: id,
+      $or: [
+        { title: { $regex: query, $options: 'i' } },
+        { story: { $regex: query, $options: 'i' } },
+        { visitedLocations: { $regex: query, $options: 'i' } },
+      ],
+    }).sort({ isFavourite: -1 });
+    console.log('SEARCH RESULTS: ', searchResults);
+
+    // RETURN THE SEARCH RESULT IN RESPONSE
+    res.status(200).json({
+      status: 'success',
+      data: {
+        stories: searchResults,
+      },
+    });
+  } catch (error) {
+    console.log('Error in searchStories() controller: ', error);
+    res.status(500).json({
+      status: 'error',
+      message: error,
+    });
+  }
+};
