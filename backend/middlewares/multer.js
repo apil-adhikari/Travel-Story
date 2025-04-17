@@ -51,11 +51,13 @@ export const resizeTravelStoryImages = async (req, res, next) => {
   // console.log('req.body: ', req.body);
   // console.log('req.files.coverImage rezie images', req.files.coverImage);
 
-  if (!req.files.coverImage) {
-    return res.status(400).json({
-      status: 'fail',
-      message: 'Please upload cover image',
-    });
+  if (req.method === 'POST') {
+    if (!req.files.coverImage) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Please upload cover image',
+      });
+    }
   }
 
   // console.log('NO Of cover images uploaded: ', req.files.coverImage.length());
@@ -76,6 +78,8 @@ export const resizeTravelStoryImages = async (req, res, next) => {
   if (req.files.images) {
     req.body.images = [];
 
+    // console.log(req.files.images);
+
     await Promise.all(
       req.files.images.map(async (file, i) => {
         const uniqueSuffix = `image-${Date.now()}-${Math.round(
@@ -93,7 +97,7 @@ export const resizeTravelStoryImages = async (req, res, next) => {
         req.body.images.push(filename);
       })
     );
-    // console.log(req.body.images);
+    console.log(req.body.images);
   }
 
   next();

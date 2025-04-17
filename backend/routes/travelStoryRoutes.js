@@ -2,6 +2,7 @@ import express from 'express';
 import {
   createTravelStory,
   getAllTravelStory,
+  updateTravelStory,
 } from '../controllers/travelStoryController.js';
 import { authenticateToken } from '../utils/authenticateToken.js';
 import {
@@ -32,7 +33,13 @@ router.post(
 );
 router.get('/', getAllTravelStory);
 // router.get('/:id', getTravelStory);
-// router.patch('/:id', updateTravelStory);
+router.patch(
+  '/:id',
+  authenticateToken,
+  uploadTravelStoryImages,
+  resizeTravelStoryImages,
+  updateTravelStory
+);
 // router.delete('/:id', deleteTravelStory);
 
 export default router;
