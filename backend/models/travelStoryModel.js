@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import slugify from 'slugify';
 
 /** travel Story Schema Structure:
  * - Story Title: String, required
@@ -15,6 +16,8 @@ const travelStorySchema = new mongoose.Schema(
     title: {
       type: String,
       required: [true, 'A travel story must have a title'],
+      unique: true,
+      index: true,
       trim: true,
       minLength: [
         10,
@@ -24,6 +27,15 @@ const travelStorySchema = new mongoose.Schema(
         40,
         'A travel story must be less than or equal to 40 characters',
       ],
+      validate: {
+        validator: function (value) {
+          // return /^[a-zA-Z ]+$/.test(value.trim()) && value.trim().length > 0; // not allowing numbers it title
+          return (
+            /^[a-zA-Z0-9 ]+$/.test(value.trim()) && value.trim().length > 0
+          ); // Allow numbers too
+        },
+        message: 'Title must contain only letters and spaces.',
+      },
     },
 
     storyContent: {
@@ -70,11 +82,45 @@ const travelStorySchema = new mongoose.Schema(
         'You must enter when you travelled to certain the place',
       ],
     },
+
+    slug: { type: String, unique: true },
   },
   {
     timestamps: true,
   }
 );
+
+// DOCUMENT MIDDLEWARES
+travelStorySchema.pre('save', function (next) {
+  // Replace all non-letter and non-space characters with a space
+  this.title = this.title
+    // .replace(/[^a-zA-Z ]/g, ' ') // not allowing numbers in title
+    .replace(/[^a-zA-Z0-9 ]/g, ' ') // Replace special characters with space
+    .replace(/\s+/g, ' ') // Collapse multiple spaces into one
+    .trim(); // Trim leading/trailing spaces
+
+  next();
+});
+
+travelStorySchema.pre('save', function (next) {
+  console.log('IN PRE SAVE HOOK:::');
+  this.slug = slugify(this.title, {
+    trim: true,
+    lower: true,
+    strict: true,
+  });
+  next();
+});
+
+travelStorySchema.statics.updateSlug = async function (title) {
+  // console.log('IN STATIC FUNCTION:::');
+  const slug = slugify(title, {
+    trim: true,
+    lower: true,
+    strict: true,
+  });
+  return slug;
+};
 
 const TravelStory = mongoose.model('TravelStory', travelStorySchema);
 export default TravelStory;

@@ -97,7 +97,7 @@ export const resizeTravelStoryImages = async (req, res, next) => {
         req.body.images.push(filename);
       })
     );
-    console.log(req.body.images);
+    // console.log(req.body.images);
   }
 
   next();

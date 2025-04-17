@@ -11,7 +11,7 @@ export const createTravelStory = async (req, res) => {
 
     // Check for cover image from req.body(passed from multer.js middleware)
     const coverImage = req.body.coverImage;
-    console.log('In createTravelStory Controller coverImage: ', coverImage);
+    // console.log('In createTravelStory Controller coverImage: ', coverImage);
     if (!coverImage) {
       return res.status(400).json({
         status: 'fail',
@@ -21,7 +21,7 @@ export const createTravelStory = async (req, res) => {
     }
 
     const images = req.body.images;
-    console.log(images);
+    // console.log(images);
 
     // console.log('REQ.BODY', req.body);
 
@@ -132,7 +132,8 @@ export const updateTravelStory = async (req, res) => {
     const coverImage = req.body.coverImage;
     const images = req.body.images;
     // console.log(coverImage, images);
-    console.log('req.body', req.body);
+    // console.log('req.body', req.body);
+    const slug = await TravelStory.updateSlug(title);
 
     // update the story
     const updatedTravelStory = await TravelStory.findByIdAndUpdate(
@@ -146,14 +147,13 @@ export const updateTravelStory = async (req, res) => {
         coverImage,
         images,
         visitedDate,
+        slug,
       },
       {
         new: true,
         runValidators: true,
       }
     );
-
-    console.log(updatedTravelStory);
 
     res.status(200).json({
       status: 'success',
