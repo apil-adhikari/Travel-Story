@@ -1,17 +1,29 @@
 import TravelStory from '../models/travelStoryModel.js';
 
+// HANDLING FILE UPLOADS using `multer`
+
 export const createTravelStory = async (req, res) => {
   try {
-    const {
-      title,
-      story,
-      visitedLocations,
-      isFavourite,
-      coverImage,
-      visitedDate,
-    } = req.body;
+    const { title, story, visitedLocations, isFavourite, visitedDate } =
+      req.body;
 
     const author = req.user.id;
+
+    // Check for cover image from req.body(passed from multer.js middleware)
+    const coverImage = req.body.coverImage;
+    console.log('In createTravelStory Controller coverImage: ', coverImage);
+    if (!coverImage) {
+      return res.status(400).json({
+        status: 'fail',
+        message:
+          'No cover image uploaded. You need to upload cover image in order to continue',
+      });
+    }
+
+    const images = req.body.images;
+    console.log(images);
+
+    // console.log('REQ.BODY', req.body);
 
     // Validate required fields
     if (
@@ -39,7 +51,9 @@ export const createTravelStory = async (req, res) => {
       visitedLocations,
       isFavourite,
       author,
+
       coverImage,
+      images,
       // visitedDate: parsedVisitedDate,
       visitedDate,
     });

@@ -4,6 +4,10 @@ import {
   getAllTravelStory,
 } from '../controllers/travelStoryController.js';
 import { authenticateToken } from '../utils/authenticateToken.js';
+import {
+  resizeTravelStoryImages,
+  uploadTravelStoryImages,
+} from '../middlewares/multer.js';
 
 const router = express.Router();
 
@@ -20,7 +24,12 @@ const router = express.Router();
 // The user should be logged in to do access the following routes
 router.use(authenticateToken);
 
-router.post('/', createTravelStory);
+router.post(
+  '/',
+  uploadTravelStoryImages,
+  resizeTravelStoryImages,
+  createTravelStory
+);
 router.get('/', getAllTravelStory);
 // router.get('/:id', getTravelStory);
 // router.patch('/:id', updateTravelStory);

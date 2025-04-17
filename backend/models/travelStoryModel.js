@@ -58,6 +58,11 @@ const travelStorySchema = new mongoose.Schema(
       required: [true, 'A travel story must have a coveer image'],
     },
 
+    images: {
+      type: [String],
+      default: [],
+    },
+
     visitedDate: {
       type: Date,
       required: [
