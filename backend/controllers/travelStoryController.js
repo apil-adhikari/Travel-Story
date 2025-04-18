@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import TravelStory from '../models/travelStoryModel.js';
-import path from 'path';
+import path, { parse } from 'path';
 
 // HANDLING FILE UPLOADS using `multer`
 
@@ -331,6 +331,70 @@ export const searchStoreis = async (req, res) => {
     res.status(500).json({
       status: 'error',
       message: error,
+    });
+  }
+};
+
+/**
+ * FILTER story by date range
+ */
+
+export const filterStoryByDateRange = async (req, res) => {
+  try {
+    // Logged in user id
+    const userId = req.user.id;
+
+    const { startDate, endDate } = req.query;
+    console.log(`Start Date : ${startDate} End Date: ${endDate}`);
+    console.log(typeof startDate); // Should be 'string'
+
+    // Check if dates exist
+    if (!startDate || !endDate) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Start and end dates are required!',
+      });
+    }
+
+    // Convert to JavaScript Date Object
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // Set end to end of day for inclusiveness
+    end.setHours(23, 59, 59, 999);
+
+    console.log('Start Date Object:', start);
+    console.log('End Date Object:', end);
+
+    // Validate dates
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Invalid date format. Please use YYYY-MM-DD.',
+      });
+    }
+
+    // Query the database
+    const filteredStories = await TravelStory.find({
+      author: userId,
+      visitedDate: {
+        $gte: start,
+        $lte: end,
+      },
+    });
+
+    // console.log('Filtered Stories: ', filteredStories);
+
+    return res.status(200).json({
+      status: 'success',
+      results: filteredStories.length,
+      data: filteredStories,
+    });
+  } catch (error) {
+    console.error('Error in filterStoryByDateRange() controller: ', error);
+    return res.status(500).json({
+      status: 'error',
+      message: 'Internal server error. Please try again later.',
     });
   }
 };

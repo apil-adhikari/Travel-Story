@@ -6,6 +6,7 @@ import {
   deleteTravelStory,
   updateIsFavourite,
   searchStoreis,
+  filterStoryByDateRange,
 } from '../controllers/travelStoryController.js';
 import { authenticateToken } from '../utils/authenticateToken.js';
 import {
@@ -50,5 +51,6 @@ router.patch('/update-is-favourite/:id', authenticateToken, updateIsFavourite);
 
 // SEARCH (public route)
 router.get('/search', authenticateToken, searchStoreis);
+router.get('/filter-by-date', authenticateToken, filterStoryByDateRange);
 
 export default router;
